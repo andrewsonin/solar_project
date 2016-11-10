@@ -25,6 +25,7 @@ time_step = None
 space_objects = []
 """Список космических объектов."""
 
+train, massive = [], []
 
 def execution():
     """Функция исполнения -- выполняется циклически, вызывая обработку всех небесных тел,
@@ -33,12 +34,14 @@ def execution():
     При perform_execution == True функция запрашивает вызов самой себя по таймеру через от 1 мс до 100 мс.
     """
     global physical_time
-    global displayed_time
+    global displayed_time, train, massive
     recalculate_space_objects_positions(space_objects, time_step.get())
     for body in space_objects:
         update_object_position(space, body)
     physical_time += time_step.get()
     displayed_time.set("%.1f" % physical_time + " seconds gone")
+    train.append(physical_time)
+    massive.append((space_objects[1].Vx **2 + space_objects[1].Vy **2)**0.5)
 
     if perform_execution:
         space.after(101 - int(time_speed.get()), execution)
@@ -147,6 +150,7 @@ def main():
 
     root.mainloop()
     print('Modelling finished!')
+    graph(train, massive)
 
 if __name__ == "__main__":
     main()
